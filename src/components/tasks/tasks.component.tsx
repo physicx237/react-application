@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from 'react';
+import { useEffect, useState } from 'react';
 import { Task } from '../../domain/models/task.model';
 import { todoService } from '../app.component';
 
@@ -8,8 +8,6 @@ function Tasks() {
   const [taskDescription, setTaskDescription] = useState<string>('');
 
   const [editTask, setEditTask] = useState<number>(0);
-
-  const inputRef = useRef<HTMLInputElement>(null);
 
   useEffect(() => {
     todoService.tasks$.subscribe((tasks) => {
@@ -21,7 +19,7 @@ function Tasks() {
     <div key={task.id}>
       {editTask === task.id ? (
         <input
-          ref={inputRef}
+          defaultValue={task.description}
           onChange={(e) => {
             setTaskDescription(e.target.value);
           }}
@@ -31,12 +29,8 @@ function Tasks() {
       )}
 
       <button
-        onClick={async () => {
-          await setEditTask(task.id);
-
-          if (inputRef.current) {
-            inputRef.current.value = task.description;
-          }
+        onClick={() => {
+          setEditTask(task.id);
 
           if (editTask === task.id) {
             todoService.updateTask({ ...task, description: taskDescription });
